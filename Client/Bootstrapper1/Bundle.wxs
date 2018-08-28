@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Bundle Name="视频监控客户端引导程序" Version="1.0.0.0" IconSourceFile="ico_install.ico" Manufacturer="ZKTeco 中控智慧" UpgradeCode="08a28205-3ba8-481a-9f60-3321a4aca6b4">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
+      <!-- <bal:WixStandardBootstrapperApplication LicenseFile="ZKTecoLicense.rtf" ThemeFile="MyTheme.xml" LocalizationFile="MyLocalize.wxl" LogoFile="logo.jpg" />-->
+    </BootstrapperApplicationRef>
+
+    <Chain>
+      <!-- TODO: Define the list of chained packages. -->
+      <!-- <MsiPackage SourceFile="path\to\your.msi" /> -->
+      <MsiPackage SourceFile="Client.msi"  Compressed="yes" Permanent="no" Vital="yes" DisplayInternalUI="yes"/>
+    </Chain>
+  </Bundle>
+</Wix>

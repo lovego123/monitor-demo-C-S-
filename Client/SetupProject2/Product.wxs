@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="客户端" Language="2052" Version="1.0.0.0" Manufacturer="ZKTeco 中控智慧" UpgradeCode="9306fffb-ad9f-4552-a3af-76688b465fc8">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+
+    <!--Feature安装清单-->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="Client.exe" />
+      <ComponentRef Id="manual.docx"/>
+      <!--引用使用手册-->
+      <ComponentRef Id="ApplicationShortcut" />
+      <!--引用菜单快捷方式-->
+      <ComponentRef Id="DesktopFolderShortcut" />
+      <!--引用桌面快捷方式-->
+    </Feature>
+
+    <!--软件安装UI风格-->
+    <UI>
+      <Property Id="WIXUI_INSTALLDIR" Value="ProgramFilesFolder"/>
+      <UIRef Id="WixUI_InstallDir"/>
+      <!--完成安装设定-->
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">
+        WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed
+      </Publish>
+      <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="感谢您安装此软件." />
+      <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="完成后启动视频监控客户端v1.0.0" />
+    </UI>
+    <!--完成启动程序Action设定-->
+    <Property Id="WixShellExecTarget" Value="[#Client.exe]"/>
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+    <!--软件协议-->
+    <WixVariable Id="WixUILicenseRtf" Value="ZKTecoLicense.rtf"/>
+    <!--背景图片-->
+    <WixVariable Id="WixUIDialogBmp" Value="Icons\bg.bmp"/>
+    <!--顶部图片-->
+    <WixVariable Id="WixUIBannerBmp" Value="Icons\logo.bmp"/>
+    <!--本地程序图标-->
+    <Property Id="ARPPRODUCTICON" Value="ico_install" />
+  </Product>
+
+  <!--目录设定块-->
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <!--安装目录设定-->
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="COMPANY" Name="ZKTeco">
+          <Directory Id="VERSION" Name="v1.0.0">
+            <Directory Id="INSTALLFOLDER" Name="Video Client"/>
+          </Directory>
+        </Directory>
+      </Directory>
+      <!--开始菜单显示-->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="视频监控客户端v1.0.0"/>
+      </Directory>
+      <!--桌面显示-->
+      <Directory Id="DesktopFolder" Name="Desktop"/>
+    </Directory>
+  </Fragment>
+
+
+  <!--目录引入块-->
+  <Fragment>
+    <!--引入目标文件-->
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="Client.exe" Guid="33620422-297B-44B0-81EF-3E05E03C7839">
+        <File Id="Client.exe" Source="$(var.Client.TargetPath)" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="manual.docx" Guid="53CB3C74-C5D3-49C8-9F0A-A12F1CCB31B5">
+        <File Id="manual.docx" Source="reference_manual.docx" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+    <!--引入开始菜单快捷方式-->
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="39D2C790-84A5-411C-9319-0572BD28125E">
+        <Shortcut Id="LunchApplicationShortcut"
+                  Name="启动"
+                  Description="启动视频监控客户端v1.0.0"
+                  Target="[#Client.exe]"
+                  WorkingDirectory="INSTALLFOLDER">
+          <Icon Id="ico_install" SourceFile="Icons\ico_install.ico"/>
+        </Shortcut>
+        <Shortcut Id="UninstallApplicationShortcut"
+                  Name="卸载"
+                  Description="卸载视频监控客户端v1.0.0"
+                  Target="[SystemFolder]msiexec.exe"
+                  Arguments="/x [ProductCode]">
+          <Icon Id="ico_uninstall" SourceFile="Icons\ico_uninstall.ico"/>
+        </Shortcut>
+        <!--卸载删除文件目录-->
+        <RemoveFolder Id="ApplicationProgramsFolder" On ="uninstall"/>
+        <!--注册表信息-->
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\Video Client" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+    <!--引入桌面快捷方式-->
+    <DirectoryRef Id="DesktopFolder">
+      <Component Id="DesktopFolderShortcut" Guid="7DBDF2F8-C618-44AE-BDBF-A8A3D2AB175F">
+        <Shortcut Id="DesktopShortcut"
+                  Directory="DesktopFolder"
+                  Name="视频监控客户端v1.0.0"
+                  Target="[#Client.exe]"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="ico_install"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\Video Client" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+
+</Wix>
